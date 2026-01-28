@@ -54,6 +54,7 @@ spec:
       containers:
       - name: backend
         image: pavan095/backend:v1
+        imagePullPolicy: Always
         resources:
           requests:
             cpu: 100m
@@ -105,4 +106,5 @@ spec:
    name: backend
  minReplicas: 2
  maxReplicas: 10
+
  targetCPUUtilizationPercentage: 15 # usually 75 in real environment
