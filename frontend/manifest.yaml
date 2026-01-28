@@ -126,6 +126,7 @@ spec:
       containers:
       - name: frontend
         image: pavan095/frontend:v1
+        imagePullPolicy: Always
         resources:
           requests:
             cpu: 100m
