@@ -2,28 +2,28 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql
-  namespace: expense
+  namespace: pavan
   labels:
     app: mysql
     tier: db
-    project: expense
+    project: pavan
 spec:
   replicas: 2
   selector:
     matchLabels:
       app: mysql
       tier: db
-      project: expense
+      project: pavan
   template:
     metadata:
       labels:
         app: mysql
         tier: db
-        project: expense
+        project: pavan
     spec:
       containers:
       - name: mysql
-        image: joindevops/mysql:v1
+        image: pavan095/mysql:v1
         readinessProbe:
           tcpSocket:
             port: 3306
@@ -39,12 +39,12 @@ kind: Service
 apiVersion: v1
 metadata:
   name: mysql
-  namespace: expense
+  namespace: pavan
 spec:
   selector:
     app: mysql
     tier: db
-    project: expense
+    project: pavan
   ports:
   - name: mysql-port
     protocol: TCP
