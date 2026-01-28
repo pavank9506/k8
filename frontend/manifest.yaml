@@ -168,7 +168,7 @@ spec:
    name: frontend
  minReplicas: 1
  maxReplicas: 10
- targetCPUUtilizationPercentage: 15 # usually 75 in real environment
+ targetCPUUtilizationPercentage: 75 # usually 75 in real environment
 ---
 apiVersion: elbv2.k8s.aws/v1beta1
 kind: TargetGroupBinding
@@ -177,7 +177,7 @@ metadata:
   namespace: pavan
 spec:
   serviceRef:
-    name: frontend # route traffic to the awesome-service
+    name: frontend 
     port: 80
-  targetGroupARN: arn:aws:elasticloadbalancing:us-east-1:315069654700:targetgroup/expense-dev/3a568c998a755e02
+  targetGroupARN: arn:aws:elasticloadbalancing:us-east-1:315069654700:targetgroup/pavan-dev/3a568c998a755e02
   targetType: ip
