@@ -113,7 +113,7 @@ spec:
       labels:
         app: frontend
         tier: web
-        project: epavan
+        project: pavan
     spec:
       containers:
       - name: frontend
@@ -122,15 +122,26 @@ spec:
           requests:
             cpu: 100m
             memory: 128Mi
-          # limits is greater than or equal to requests
           limits:
             cpu: 100m
             memory: 128Mi
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 20
         volumeMounts:
-            - name: nginx-conf
-              mountPath: /etc/nginx/nginx.conf
-              subPath: nginx.conf
-              readOnly: true
+          - name: nginx-conf
+            mountPath: /etc/nginx/nginx.conf
+            subPath: nginx.conf
+            readOnly: true
       volumes:
       - name: nginx-conf
         configMap:
@@ -179,5 +190,5 @@ spec:
   serviceRef:
     name: frontend # route traffic to the awesome-service
     port: 80
-  targetGroupARN: arn:aws:elasticloadbalancing:us-east-1:315069654700:targetgroup/expense-dev/3a568c998a755e02
+  targetGroupARN: arn:aws:elasticloadbalancing:us-east-1:315069654700:targetgroup/pavan-dev/3a568c998a755e02
   targetType: ip
