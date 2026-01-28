@@ -1,4 +1,12 @@
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: pavan
+  labels:
+    project: pavan
+    environment: dev
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: frontend
