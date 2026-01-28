@@ -1,0 +1,108 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pavan
+  labels:
+    project: pavan
+    environment: dev
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend
+  namespace: pavan
+data:
+  DB_HOST: mysql
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: pavan
+  labels:
+    app: backend
+    tier: api
+    project: pavan
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+      tier: api
+      project: pavan
+  template:
+    metadata:
+      labels:
+        app: backend
+        tier: api
+        project: pavan
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - backend
+              topologyKey: "kubernetes.io/hostname"
+      initContainers:
+      - name: mysql-check
+        image: busybox:1.28
+        command: ['sh', '-c', "until nslookup mysql; do echo waiting for myservice; sleep 2; done"]
+      containers:
+      - name: backend
+        image: pavan095/backend:v1
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          # limits is greater than or equal to requests
+          limits:
+            cpu: 100m
+            memory: 128Mi
+        envFrom:
+        - configMapRef:
+            name: backend
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: backend
+  namespace: pavan
+spec:
+  selector:
+    app: backend
+    tier: api
+    project: pavan
+  ports:
+  - name: backend-port
+    protocol: TCP
+    port: 8080 # service port
+    targetPort: 8080 # container port
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+ name: backend
+ namespace: pavan
+spec:
+ scaleTargetRef:
+   apiVersion: apps/v1
+   kind: Deployment
+   name: backend
+ minReplicas: 2
+ maxReplicas: 10
+ targetCPUUtilizationPercentage: 15 # usually 75 in real environment
